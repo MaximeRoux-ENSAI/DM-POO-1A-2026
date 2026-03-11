@@ -1,0 +1,18 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[codz]
+*$py.class
+
+# Unit test / coverage reports
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Ruff
+.ruff_cache/
+
+# mypy
+.mypy_cache/
+
+# macOS
+.DS_Store

@@ -1,0 +1,30 @@
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+preview = true
+extend-select = ["E", "F", "W", "I"]
+
+[tool.black]
+line-length = 120
+
+[tool.pytest.ini_options]
+doctest_optionflags = "NORMALIZE_WHITESPACE ELLIPSIS"
+addopts = [
+    "--doctest-modules",
+]
+
+[tool.coverage.report]
+omit = [
+    "main.py",
+    "test_sanity_check.py",
+    "conftest.py",
+    "__init__.py"
+]
+exclude_lines = [
+    'return NotImplemented',
+    '@(abc\.)?abstractmethod',
+]
+
+[tool.mypy]
+exclude = ["test_", "conftest.py"]
