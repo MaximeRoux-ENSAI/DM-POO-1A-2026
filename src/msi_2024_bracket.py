@@ -53,6 +53,95 @@ class MSI2024Bracket(Phase):
         }
         return tableau_vide
 
+    def simuler(self) -> None:
+        """Simuler la totalité du tournoi.
+
+        Cette méthode simule successivement la phase de qualifications
+        (Play-In) puis la phase finale (Bracket). Les phases simulées sont
+        sauvegardées dans l'attribut protégé ``_phases``.
+        """
+
+        # Phase 1 : Play-In
+        playin = MSI2024PlayIn()
+
+        places_playin = playin.renvoyer_places()
+        equipes_playin = {
+            seed: equipe
+            for seed, equipe in self._equipes.items()
+            if seed in places_playin
+        }
+
+        playin.ajouter_equipes(equipes_playin)
+        playin.simuler()
+
+        # équipes qualifiées pour la phase finale
+        classement_playin = playin.renvoyer_classement()
+
+        qualifies_playin = (
+            classement_playin["1-2"]
+            | classement_playin["3-4"]
+        )
+
+        # Phase 2 : Bracket
+        bracket = MSI2024Bracket()
+
+        places_bracket = bracket.renvoyer_places()
+
+        equipes_bracket = {
+            seed: equipe
+            for seed, equipe in self._equipes.items()
+            if seed in places_bracket
+        }
+
+        # remplacer les seeds Play-In par les équipes qualifiées
+        seeds_playin = sorted(
+            [s for s in places_bracket if "Play-In" in s]
+        )
+
+        for seed, equipe in zip(seeds_playin, sorted(qualifies_playin)):
+            equipes_bracket[seed] = equipe
+
+        bracket.ajouter_equipes(equipes_bracket)
+        bracket.simuler()
+
+        self._phases = [playin, bracket]
+
+    def renvoyer_classement(self) -> dict[str, set]:
+        """Renvoyer le classement final du tournoi.
+
+        Returns
+        -------
+        dict[str, set]
+            Dictionnaire contenant le classement du tournoi.
+            Les clés correspondent aux positions finales
+            ("1", "2", "3", "4", "5-6", "7-8", "9-10", "11-12")
+            et les valeurs sont les ensembles d'équipes
+            correspondantes.
+        """
+
+        playin = self._phases[0]
+        bracket = self._phases[1]
+
+        classement_playin = playin.renvoyer_classement()
+
+        finale = bracket._tableau["Tour 5"]["Match 1"]
+
+        classement = {
+            "1": {finale.renvoyer_equipe_gagnante()},
+            "2": {finale.renvoyer_equipe_perdante()},
+            "3": {
+                bracket._tableau["Tour 4"]["Match 1"].renvoyer_equipe_perdante(),
+                bracket._tableau["Tour 4"]["Match 2"].renvoyer_equipe_perdante(),
+            },
+            "4": set(),
+            "5-6": set(),
+            "7-8": set(),
+            "9-10": classement_playin["5-6"],
+            "11-12": classement_playin["7-8"],
+        }
+
+        return classement
+
     def renvoyer_resultats_str(self) -> str:
         """Renvoie les résultats sous la forme d'une chaîne de caractères.
 
