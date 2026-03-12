@@ -83,7 +83,20 @@ class MSI2024PlayIn(Phase):
     #         )
 
     def simuler_tirage(self) -> None:
-        """Simuler le tirage des groupes."""
+        """Simuler le tirage des groupes.
+
+        Cette méthode répartit aléatoirement les équipes des quatre
+        chapeaux dans les groupes A et B. Chaque groupe contient
+        exactement une équipe de chaque chapeau.
+
+        Les matchs du tour 1 sont ensuite initialisés selon les règles
+        suivantes :
+
+        - le match 1 oppose une équipe du chapeau 1 à une équipe du
+        chapeau 4 ;
+        - le match 2 oppose une équipe du chapeau 2 à une équipe du
+        chapeau 3.
+        """
         chapeau_1 = random.sample(list(self._chapeaux_equipes["Chapeau 1"]), 2)
         chapeau_2 = random.sample(list(self._chapeaux_equipes["Chapeau 2"]), 2)
         chapeau_3 = random.sample(list(self._chapeaux_equipes["Chapeau 3"]), 2)
@@ -161,7 +174,15 @@ class MSI2024PlayIn(Phase):
             m.simuler()
 
     def simuler_tours(self) -> None:
-        """Simuler tous les tours de la phase."""
+        """Simuler l'ensemble des tours de la phase.
+
+        Les tours sont simulés dans l'ordre suivant :
+
+        1. matchs 1 et 2 du tour 1,
+        2. matchs 1 du tour 2,
+        3. matchs 3 du tour 1,
+        4. matchs 2 du tour 2.
+        """
         self.__simuler_tour_1_matchs_1_2()
         self.__simuler_tour_2_matchs_1()
         self.__simuler_tour_1_matchs_3()
@@ -172,7 +193,16 @@ class MSI2024PlayIn(Phase):
     # ------------------------------------------------------------------
 
     def renvoyer_classement(self) -> dict[str, set[Equipe]]:
-        """Renvoyer le classement final de la phase."""
+        """Renvoyer le classement final de la phase.
+
+        Returns
+        -------
+        dict[str, set[Equipe]]
+            Dictionnaire représentant le classement de la phase.
+            Les clés correspondent aux positions finales
+            ("1-2", "3-4", "5-6", "7-8") et les valeurs sont les
+            ensembles d'équipes associées.
+        """
         classement = {
             "1-2": set(),
             "3-4": set(),
