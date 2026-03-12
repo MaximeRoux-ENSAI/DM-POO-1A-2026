@@ -152,3 +152,27 @@ def test_msi_2024_playin_renvoyer_resultats_str(msi_2024_playin_apres_tirage_et_
     )
 
     assert resultat_renvoye == resultat_attendu
+
+
+## Rajout de test pour le couverture
+
+def test_msi_2024_playin_simuler(msi_2024_playin_avant_tirage):
+    playin = msi_2024_playin_avant_tirage
+
+    playin.simuler()
+
+    # vérifier que les scores existent
+    for groupe in ("Groupe A", "Groupe B"):
+        for tour in ("Tour 1", "Tour 2"):
+            for match in playin._tableau[groupe][tour].values():
+                assert match.score_equipe_1 is not None
+                assert match.score_equipe_2 is not None
+
+def test_msi_2024_playin_structure_classement(msi_2024_playin_apres_tirage_et_resultats):
+    classement = msi_2024_playin_apres_tirage_et_resultats.renvoyer_classement()
+
+    assert set(classement.keys()) == {"1-2", "3-4", "5-6", "7-8"}
+
+    for valeur in classement.values():
+        assert isinstance(valeur, set)
+        assert len(valeur) == 2
