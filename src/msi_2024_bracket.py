@@ -53,6 +53,25 @@ class MSI2024Bracket(Phase):
         }
         return tableau_vide
 
+    def simuler_tirage(self) -> None:
+        """Simuler le tirage du bracket."""
+        chapeau_1 = list(self._chapeaux_equipes["Chapeau 1"])
+        chapeau_2 = list(self._chapeaux_equipes["Chapeau 2"])
+        chapeau_3 = list(self._chapeaux_equipes["Chapeau 3"])
+        chapeau_4 = list(self._chapeaux_equipes["Chapeau 4"])
+
+        self._tableau["Tour 1"]["Match 1"].ajouter_equipes(chapeau_1[0], chapeau_4[0])
+        self._tableau["Tour 1"]["Match 2"].ajouter_equipes(chapeau_2[0], chapeau_3[0])
+        self._tableau["Tour 1"]["Match 3"].ajouter_equipes(chapeau_1[1], chapeau_4[1])
+        self._tableau["Tour 1"]["Match 4"].ajouter_equipes(chapeau_2[1], chapeau_3[1])
+
+    def simuler_tours(self) -> None:
+        """Simuler tous les tours du bracket."""
+        for tour in self._tableau.values():
+            for match in tour.values():
+                if match.equipe_1 is not None and match.equipe_2 is not None:
+                    match.simuler()
+
     def simuler(self) -> None:
         """Simuler la totalité du tournoi.
 
