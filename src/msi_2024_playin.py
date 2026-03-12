@@ -82,7 +82,7 @@ class MSI2024PlayIn(Phase):
     #             equipe_c3,
     #         )
 
-    def simuler_tirage(self) -> None:
+    def _simuler_tirage(self) -> None:
         """Simuler le tirage des groupes.
 
         Cette méthode répartit aléatoirement les équipes des quatre
@@ -173,7 +173,7 @@ class MSI2024PlayIn(Phase):
             m = self._tableau[groupe]["Tour 2"]["Match 2"]
             m.simuler()
 
-    def simuler_tours(self) -> None:
+    def _simuler_tours(self) -> None:
         """Simuler l'ensemble des tours de la phase.
 
         Les tours sont simulés dans l'ordre suivant :

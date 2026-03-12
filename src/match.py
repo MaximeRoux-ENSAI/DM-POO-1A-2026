@@ -96,7 +96,7 @@ class Match:
 
         return "\n".join((ligne_horizontale, ligne_1, ligne_2, ligne_horizontale))
 
-    def ajouter_equipe_1(self, equipe: Equipe) -> None:
+    def ajouter_equipe_1(self, equipe_1: Equipe) -> None:
         """Ajouter l'équipe 1 au match.
 
         Parameters
@@ -106,14 +106,14 @@ class Match:
         """
         if self.__equipe_1 is not None:
             raise ValueError("L'équipe 1 a déjà été ajoutée.")
-        if not isinstance(equipe, Equipe):
+        if not isinstance(equipe_1, Equipe):
             raise TypeError("L'équipe 1 doit être une équipe.")
-        if self.__equipe_2 is not None and equipe == self.__equipe_2:
+        if self.__equipe_2 is not None and equipe_1 == self.__equipe_2:
             raise ValueError("Les deux équipes du match doivent être différentes.")
 
-        self.__equipe_1 = equipe
+        self.__equipe_1 = equipe_1
 
-    def ajouter_equipe_2(self, equipe: Equipe) -> None:
+    def ajouter_equipe_2(self, equipe_2: Equipe) -> None:
         """Ajouter l'équipe 2 au match.
 
         Parameters
@@ -123,12 +123,12 @@ class Match:
         """
         if self.__equipe_2 is not None:
             raise ValueError("L'équipe 2 a déjà été ajoutée.")
-        if not isinstance(equipe, Equipe):
+        if not isinstance(equipe_2, Equipe):
             raise TypeError("L'équipe 2 doit être une équipe.")
-        if self.__equipe_1 is not None and equipe == self.__equipe_1:
+        if self.__equipe_1 is not None and equipe_2 == self.__equipe_1:
             raise ValueError("Les deux équipes du match doivent être différentes.")
 
-        self.__equipe_2 = equipe
+        self.__equipe_2 = equipe_2
 
     def ajouter_equipes(self, equipe_1: Equipe, equipe_2: Equipe) -> None:
         """Ajouter les deux équipes du match.
