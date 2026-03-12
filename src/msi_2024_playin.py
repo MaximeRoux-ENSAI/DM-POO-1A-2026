@@ -1,7 +1,10 @@
 """Implémentation de la classe MSI2024PlayIn."""
 
+import random
+
 from .match import Match
 from .phase import Phase
+from .equipe import Equipe
 
 
 class MSI2024PlayIn(Phase):
@@ -15,6 +18,7 @@ class MSI2024PlayIn(Phase):
 
     @property
     def _CHAPEAUX(self) -> dict[str, set[str]]:
+        """Renvoyer la structure des chapeaux."""
         chapeaux = {
             "Chapeau 1": {"KR #2", "CN #2"},
             "Chapeau 2": {"EMEA #2", "NA #2"},
@@ -25,6 +29,7 @@ class MSI2024PlayIn(Phase):
 
     @property
     def _TABLEAU_VIDE(self) -> dict[str, dict[str, dict[str, Match]]]:
+        """Renvoyer la structure vide du tableau de la phase."""
         tableau_vide = {
             "Groupe A": {
                 "Tour 1": {
@@ -50,6 +55,150 @@ class MSI2024PlayIn(Phase):
             },
         }
         return tableau_vide
+
+    # ------------------------------------------------------------------
+    # Tirage
+    # ------------------------------------------------------------------
+
+    # Version rapide utilisant zip (non demandée mais conservée pour référence)
+    #
+    # def simuler_tirage_rapide(self) -> None:
+    #     chapeaux = self._chapeaux_equipes
+    #
+    #     for groupe, equipe_c1, equipe_c2, equipe_c3, equipe_c4 in zip(
+    #         ("Groupe A", "Groupe B"),
+    #         random.sample(list(chapeaux["Chapeau 1"]), 2),
+    #         random.sample(list(chapeaux["Chapeau 2"]), 2),
+    #         random.sample(list(chapeaux["Chapeau 3"]), 2),
+    #         random.sample(list(chapeaux["Chapeau 4"]), 2),
+    #     ):
+    #         self._tableau[groupe]["Tour 1"]["Match 1"].ajouter_equipes(
+    #             equipe_c1,
+    #             equipe_c4,
+    #         )
+    #
+    #         self._tableau[groupe]["Tour 1"]["Match 2"].ajouter_equipes(
+    #             equipe_c2,
+    #             equipe_c3,
+    #         )
+
+    def simuler_tirage(self) -> None:
+        """Simuler le tirage des groupes."""
+        chapeau_1 = random.sample(list(self._chapeaux_equipes["Chapeau 1"]), 2)
+        chapeau_2 = random.sample(list(self._chapeaux_equipes["Chapeau 2"]), 2)
+        chapeau_3 = random.sample(list(self._chapeaux_equipes["Chapeau 3"]), 2)
+        chapeau_4 = random.sample(list(self._chapeaux_equipes["Chapeau 4"]), 2)
+
+        self._tableau["Groupe A"]["Tour 1"]["Match 1"].ajouter_equipes(
+            chapeau_1[0],
+            chapeau_4[0],
+        )
+        self._tableau["Groupe A"]["Tour 1"]["Match 2"].ajouter_equipes(
+            chapeau_2[0],
+            chapeau_3[0],
+        )
+
+        self._tableau["Groupe B"]["Tour 1"]["Match 1"].ajouter_equipes(
+            chapeau_1[1],
+            chapeau_4[1],
+        )
+        self._tableau["Groupe B"]["Tour 1"]["Match 2"].ajouter_equipes(
+            chapeau_2[1],
+            chapeau_3[1],
+        )
+
+    # ------------------------------------------------------------------
+    # Simulation des tours
+    # ------------------------------------------------------------------
+
+    def __simuler_tour_1_matchs_1_2(self) -> None:
+        """Simuler les matchs 1 et 2 du tour 1 de chaque groupe."""
+        for groupe in ("Groupe A", "Groupe B"):
+
+            m1 = self._tableau[groupe]["Tour 1"]["Match 1"]
+            m2 = self._tableau[groupe]["Tour 1"]["Match 2"]
+
+            m1.simuler()
+            m2.simuler()
+
+            self._tableau[groupe]["Tour 2"]["Match 1"].ajouter_equipes(
+                m1.renvoyer_equipe_gagnante(),
+                m2.renvoyer_equipe_gagnante(),
+            )
+
+            self._tableau[groupe]["Tour 1"]["Match 3"].ajouter_equipes(
+                m1.renvoyer_equipe_perdante(),
+                m2.renvoyer_equipe_perdante(),
+            )
+
+    def __simuler_tour_2_matchs_1(self) -> None:
+        """Simuler le match 1 du tour 2 de chaque groupe."""
+        for groupe in ("Groupe A", "Groupe B"):
+
+            m = self._tableau[groupe]["Tour 2"]["Match 1"]
+            m.simuler()
+
+            self._tableau[groupe]["Tour 2"]["Match 2"].ajouter_equipe_1(
+                m.renvoyer_equipe_perdante()
+            )
+
+    def __simuler_tour_1_matchs_3(self) -> None:
+        """Simuler le match 3 du tour 1 de chaque groupe."""
+        for groupe in ("Groupe A", "Groupe B"):
+
+            m = self._tableau[groupe]["Tour 1"]["Match 3"]
+            m.simuler()
+
+            self._tableau[groupe]["Tour 2"]["Match 2"].ajouter_equipe_2(
+                m.renvoyer_equipe_gagnante()
+            )
+
+    def __simuler_tour_2_matchs_2(self) -> None:
+        """Simuler le match 2 du tour 2 de chaque groupe."""
+        for groupe in ("Groupe A", "Groupe B"):
+
+            m = self._tableau[groupe]["Tour 2"]["Match 2"]
+            m.simuler()
+
+    def simuler_tours(self) -> None:
+        """Simuler tous les tours de la phase."""
+        self.__simuler_tour_1_matchs_1_2()
+        self.__simuler_tour_2_matchs_1()
+        self.__simuler_tour_1_matchs_3()
+        self.__simuler_tour_2_matchs_2()
+
+    # ------------------------------------------------------------------
+    # Classement
+    # ------------------------------------------------------------------
+
+    def renvoyer_classement(self) -> dict[str, set[Equipe]]:
+        """Renvoyer le classement final de la phase."""
+        classement = {
+            "1-2": set(),
+            "3-4": set(),
+            "5-6": set(),
+            "7-8": set(),
+        }
+
+        for groupe in ("Groupe A", "Groupe B"):
+
+            classement["1-2"].add(
+                self._tableau[groupe]["Tour 2"]["Match 1"].renvoyer_equipe_gagnante()
+            )
+
+            classement["3-4"].add(
+                self._tableau[groupe]["Tour 2"]["Match 2"].renvoyer_equipe_gagnante()
+            )
+
+            classement["5-6"].add(
+                self._tableau[groupe]["Tour 2"]["Match 2"].renvoyer_equipe_perdante()
+            )
+
+            classement["7-8"].add(
+                self._tableau[groupe]["Tour 1"]["Match 3"].renvoyer_equipe_perdante()
+            )
+
+        return classement
 
     def renvoyer_resultats_str(self) -> str:
         """Renvoie les résultats sous la forme d'une chaîne de caractères.
